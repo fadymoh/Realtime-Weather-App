@@ -92,9 +92,54 @@ This is an example of how to list things you need to use the software and how to
 8. Obtain InfluxDB API key
 9. Create a bucket on InfluxDB which is where the data will be saved
 10. Go through the .env files in each service and update them with the keys and data you obtained in the previous steps
+11. Create an RSA-Key and place them inside of the Backend service folder (cert.pem, key.pem)
+12. Head to the NGINX installation folder and open "nginx.conf" and delete everything and add the following to configure the loadbalancing and reverse proxy
+    ```
+    events { }
+    
+    http {
+        upstream node_app {
+            # List all the services you have here to be able to load balance between them.
+            server localhost:6001;
+            server localhost:6002;
+            server localhost:6003;
+            server localhost:6004;
+        }
+    
+        server {
+            listen 443;
+            listen [::]:443 ssl;
+    
+            root /YOUR_BACKEND_SERVICE_LOCATION/;
+    
+            ssl_certificate           /YOUR_BACKEND_SERVICE_LOCATION/cert.pem;
+            ssl_certificate_key      /YOUR_BACKEND_SERVICE_LOCATION/key.pem;
+            ssl_trusted_certificate  /YOUR_BACKEND_SERVICE_LOCATION/cert.pem;
+    
+            location / 
+            {
+                proxy_pass https://node_app;
+            }
+        }
+    }
+    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Usage
+
+1. Run the polling service using 
+    ```sh
+    nodemon server.js
+    ```
+2. Run the user facing backend service using
+    ```sh
+    nodemon server.js
+    ```
+3. Run the frontend using
+    ```sh
+    npm start
+    ```
 
 <!-- ROADMAP -->
 ## Roadmap
