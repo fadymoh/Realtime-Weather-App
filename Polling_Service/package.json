@@ -1,0 +1,21 @@
+{
+  "name": "CoPay Weather Application",
+  "version": "1.0.0",
+  "description": "This is a project for Real Time Weather Data Aggregation for New Cairo",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fady Mohamed Abuelmagd (https://github.com/fadymoh)",
+  "license": "ISC",
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.35.0",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "winston": "^3.17.0"
+  }
+}
