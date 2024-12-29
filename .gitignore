@@ -3,3 +3,13 @@ Polling_Service/LogFile.log
 Polling_Service/node_modules/
 
 Polling_Service/package-lock.json
+
+User_Facing_Backend_Service/LogFile.log
+
+User_Facing_Backend_Service/node_modules/
+
+User_Facing_Backend_Service/package-lock.json
+
+User_Frontend_Service/node_modules/
+
+User_Frontend_Service/package-lock.json
