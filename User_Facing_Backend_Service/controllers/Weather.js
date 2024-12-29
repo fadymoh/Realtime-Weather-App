@@ -7,6 +7,55 @@ import { cache } from '../helpers/CacheConnector.js';
 var router = Router();
 router.use(json())
 
+
+/**
+ * @swagger
+ * /weather/GetLatestWeather:
+ *   get:
+ *     summary: Returns the latest weather data based on the average of responses from OpenWeatherAPI and TomorrowAPI
+ *     responses:
+ *       200:
+ *         description: A successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                Message:
+ *                 type: object
+ *                 properties:
+ *                  humidity:
+ *                   type: number
+ *                   example: 50
+ *                  temperature:
+ *                   type: number
+ *                   example: 15
+ *                  windSpeed:
+ *                   type: number
+ *                   example: 20
+ *                  visibility:
+ *                   type: number
+ *                   example: 10000
+ *                  pressure:
+ *                   type: number
+ *                   example: 1000
+ *                ErrorMessage:
+ *                 type: string
+ *                 example: null
+ *       500:
+ *        description: An error occurred
+ *        content:
+ *         application/json:
+ *          schema:
+ *           type: object
+ *           properties:
+ *            Message:
+ *             type: string
+ *             example: null
+ *            ErrorMessage:
+ *             type: string
+ *             example: An error occurred
+ */
 router.get('/GetLatestWeather', async (req, res) => {
 
     // Setup the query
@@ -39,11 +88,64 @@ router.get('/GetLatestWeather', async (req, res) => {
     });
 })
 
+/**
+ * @swagger
+ * /weather/GetForecast:
+ *   get:
+ *     summary: Returns the forecasted weather for the next 1 hour based on the data from the previous 3 hours using the specified algorithm
+ *     parameters:
+ *      - in: query
+ *        name: Algorithm
+ *        schema:
+ *         type: string
+ *         enum: [HoltWinter, ExponentialWeightedAverage]
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: A successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                Message:
+ *                 type: object
+ *                 properties:
+ *                  temperature:
+ *                   type: number
+ *                   example: 15
+ *                ErrorMessage:
+ *                 type: string
+ *                 example: null
+ *       500:
+ *        description: An error occurred
+ *        content:
+ *         application/json:
+ *          schema:
+ *           type: object
+ *           properties:
+ *            Message:
+ *             type: string
+ *             example: null
+ *            ErrorMessage:
+ *             type: string
+ *             example: An error occurred
+ */
 router.get('/GetForecast', CacheMiddleware, async (req, res) => {
 
+    // Setup Algorithm
+    if (req.query.Algorithm == null || (req.query.Algorithm != "HoltWinter" && req.query.Algorithm != "ExponentialWeightedAverage"))
+    {
+        res.status(400).json({
+            Message: null,
+            ErrorMessage: "Algorithm is required, the provided algorithm value is: " + req.query.Algorithm
+        });
+    }
+
+    // Setup the query
     const queryAPI = db.getQueryApi(process.env.INFLUXDB_ORG);
     let fluxQuery;
-    
+
     if (req.query.Algorithm == "HoltWinter") {
         fluxQuery = `from(bucket: "RTWeatherApp") 
             |> range(start: -3h)
