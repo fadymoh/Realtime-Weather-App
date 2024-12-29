@@ -9,7 +9,7 @@ const ShowWeather = ({ data }) => {
     let visibility = 10000;
     let humidity = 50;
     let windSpeed = 20;
-    console.log(data)
+
     if (data != null) {
         temperature = data.Message.temperature;
         pressure = data.Message.pressure;
