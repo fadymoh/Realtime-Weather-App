@@ -175,7 +175,7 @@ router.get('/GetForecast', CacheMiddleware, async (req, res) => {
 
     // Execute the query
     myQuery().then(() => {
-        cache.set("Forecast" + req.query.Algorithm, model, 20).then(function (result) {
+        cache.set("Forecast" + req.query.Algorithm, model, 60).then(function (result) {
             if (result.err) {
                 logger.log("error", result.err);
             }
@@ -196,13 +196,14 @@ router.get('/GetForecast', CacheMiddleware, async (req, res) => {
 })
 
 function CacheMiddleware(req, res, next) {
-    cache.get("Forecast" + req.query.Algorithm).then(function (results) {
+    let key = "Forecast" + req.query.Algorithm;
+    cache.get(key).then(function (results) {
         if (results.err) {
             logger.log("error", results.err);
         } else {
-            if (results.value.Forecast !== undefined) {
-                res.json({
-                    Message: results.value.Forecast,
+            if (results.value[key] !== undefined) {
+                res.status(200).json({
+                    Message: results.value[key],
                     ErrorMessage: null,
                     CachedData: true
                 });
